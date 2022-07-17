@@ -1,0 +1,48 @@
+replicaCount: 3
+
+image:
+  repository: abashin/otus-hw-server
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: "server-k8s-app"
+fullnameOverride: "server-k8s-app-chart"
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+  hosts:
+    - host: arch.homework
+      paths:
+        - path: /(.*)
+          pathType: ImplementationSpecific
+        - path: /otusapp/iabashin/(.*)
+          pathType: ImplementationSpecific
+  tls: []
+
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
