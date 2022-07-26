@@ -1,0 +1,17 @@
+{{- if .Values.postgresApp.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.postgresApp.name }}
+  labels:
+    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- .Values.postgresApp.labels | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.db_pv.accessMode | quote }}
+  volumeName: {{ include "otus-hw-server.fullname" . }}
+  volumeMode: {{ .Values.db_pv.volumeMode | quote | default "Filesystem" }}
+  resources:
+    requests:
+      storage: {{ .Values.db_pv.storageSize | quote }}
+{{- end }}

@@ -1,0 +1,27 @@
+{{- if .Values.postgresApp.enabled -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.postgresApp.name | quote }}
+  labels:
+    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- .Values.postgresApp.labels | nindent 4 }}
+spec:
+  local:
+    path: /tmp/otus-hw-db
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Delete
+  capacity:
+    storage: {{ .Values.db_pv.storageSize | quote }}
+  volumeMode: {{ .Values.db_pv.volumeMode | quote | default "Filesystem" }}
+  accessModes:
+    - {{ .Values.db_pv.accessMode | quote }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - minikube
+{{- end }}

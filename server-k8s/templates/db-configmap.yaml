@@ -1,0 +1,13 @@
+{{- if .Values.postgresApp.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.postgresApp.name | quote }}
+  labels:
+    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- .Values.postgresApp.labels | nindent 4 }}
+data:
+  POSTGRES_DB: postgresdb
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: test123
+{{- end }}

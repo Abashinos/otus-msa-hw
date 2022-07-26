@@ -33,6 +33,37 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
+postgresApp:
+  enabled: true
+  name: postgres
+  labels:
+    app: postgres
+
+db_deployment:
+  image:
+    name: postgres
+    pullPolicy: IfNotPresent
+    version: 14.4.0
+  container:
+    name: postgres
+    port: 5432
+
+db_pv:
+  labels:
+    type: local
+  volumeMode: Filesystem
+  accessMode: ReadWriteMany
+  storageSize: 10Gi
+
+db_pvc: ~
+
+db_configmap: ~
+
+db_service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
 
 autoscaling:
   enabled: false

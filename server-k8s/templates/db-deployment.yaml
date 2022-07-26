@@ -1,0 +1,35 @@
+{{- if .Values.postgresApp.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.postgresApp.name }}
+  labels:
+    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- .Values.postgresApp.labels | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- .Values.postgresApp.labels | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- .Values.postgresApp.labels | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.db_deployment.container.name | quote }}
+          image: {{ .Values.db_deployment.image.name | quote }}:{{ .Values.db_deployment.image.version | quote }}
+          imagePullPolicy: {{ .Values.db_deployment.image.pullPolicy | quote }}
+          ports:
+            - containerPort: {{ .Values.db_deployment.container.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.postgresApp.name | quote }}
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: {{ .Values.postgresApp.name }}
+      volumes:
+        - name: {{ .Values.postgresApp.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.postgresApp.name }}
+{{- end }}

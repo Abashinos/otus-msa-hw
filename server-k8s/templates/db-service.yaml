@@ -1,0 +1,16 @@
+{{- if .Values.postgresApp.enabled and .Values.db_service.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.postgresApp.name | quote }}
+  labels:
+    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- .Values.postgresApp.labels | nindent 4 }}
+spec:
+  type: {{ .Values.db_service.type | quote }}
+  ports:
+    - port: {{ .Values.db_service.port | quote }}
+  selector:
+    matchLabels:
+      {{- .Values.postgresApp.labels | nindent 4 }}
+{{- end }}
