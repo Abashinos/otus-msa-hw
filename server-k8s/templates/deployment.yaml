@@ -10,7 +10,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "otus-hw-server.selectorLabels" . | nindent 6 }}
+      {{- include "otus-hw-server.labels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -37,6 +37,11 @@ spec:
             - name: http
               containerPort: 8000
               protocol: TCP
+          {{- if .Values.postgresApp.enabled }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.postgresApp.name | quote }}
+          {{- end }}
           livenessProbe:
             httpGet:
               path: /health

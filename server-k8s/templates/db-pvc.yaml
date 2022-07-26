@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.postgresApp.name }}
   labels:
     {{- include "otus-hw-server.labels" . | nindent 4 }}
-    {{- .Values.postgresApp.labels | nindent 4 }}
+{{/*    {{- .Values.postgresApp.labels | nindent 4 }}*/}}
 spec:
   accessModes:
     - {{ .Values.db_pv.accessMode | quote }}

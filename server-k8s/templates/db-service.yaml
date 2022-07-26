@@ -1,16 +1,18 @@
-{{- if .Values.postgresApp.enabled and .Values.db_service.enabled -}}
+{{- if and .Values.postgresApp.enabled .Values.db_service.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Values.postgresApp.name | quote }}
   labels:
     {{- include "otus-hw-server.labels" . | nindent 4 }}
-    {{- .Values.postgresApp.labels | nindent 4 }}
+    {{- toYaml .Values.postgresApp.labels | nindent 4 }}
 spec:
   type: {{ .Values.db_service.type | quote }}
   ports:
-    - port: {{ .Values.db_service.port | quote }}
+    - port: {{ .Values.db_service.port }}
+      targetPort: {{ .Values.db_service.targetPort }}
+      protocol: TCP
+      name: http
   selector:
-    matchLabels:
-      {{- .Values.postgresApp.labels | nindent 4 }}
+    {{- toYaml .Values.postgresApp.labels | nindent 6 }}
 {{- end }}

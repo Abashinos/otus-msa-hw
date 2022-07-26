@@ -5,20 +5,20 @@ metadata:
   name: {{ .Values.postgresApp.name }}
   labels:
     {{- include "otus-hw-server.labels" . | nindent 4 }}
-    {{- .Values.postgresApp.labels | nindent 4 }}
+    {{- toYaml .Values.postgresApp.labels | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- .Values.postgresApp.labels | nindent 6 }}
+      {{- toYaml .Values.postgresApp.labels | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- .Values.postgresApp.labels | nindent 8 }}
+        {{- toYaml .Values.postgresApp.labels | nindent 8 }}
     spec:
       containers:
         - name: {{ .Values.db_deployment.container.name | quote }}
-          image: {{ .Values.db_deployment.image.name | quote }}:{{ .Values.db_deployment.image.version | quote }}
+          image: "{{ .Values.db_deployment.image.name }}:{{ .Values.db_deployment.image.version }}"
           imagePullPolicy: {{ .Values.db_deployment.image.pullPolicy | quote }}
           ports:
             - containerPort: {{ .Values.db_deployment.container.port }}
@@ -27,9 +27,9 @@ spec:
                 name: {{ .Values.postgresApp.name | quote }}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
-              name: {{ .Values.postgresApp.name }}
+              name: {{ .Values.postgresApp.name | quote }}
       volumes:
-        - name: {{ .Values.postgresApp.name }}
+        - name: {{ .Values.postgresApp.name | quote }}
           persistentVolumeClaim:
-            claimName: {{ .Values.postgresApp.name }}
+            claimName: {{ .Values.postgresApp.name | quote }}
 {{- end }}

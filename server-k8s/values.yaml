@@ -2,7 +2,7 @@ replicaCount: 3
 
 image:
   repository: abashin/otus-hw-server
-  pullPolicy: IfNotPresent
+  pullPolicy: Always  # TODO: IfNotPresent
   tag: ""
 
 imagePullSecrets: []
@@ -62,8 +62,8 @@ db_configmap: ~
 db_service:
   enabled: true
   type: ClusterIP
-  port: 80
-  targetPort: 8000
+  port: 5432
+  targetPort: 5432
 
 autoscaling:
   enabled: false

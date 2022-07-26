@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.postgresApp.name | quote }}
   labels:
     {{- include "otus-hw-server.labels" . | nindent 4 }}
-    {{- .Values.postgresApp.labels | nindent 4 }}
+    {{- toYaml .Values.postgresApp.labels | nindent 4 }}
 data:
   POSTGRES_DB: postgresdb
   POSTGRES_USER: admin
