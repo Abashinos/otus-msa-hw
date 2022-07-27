@@ -14,5 +14,6 @@ spec:
       protocol: TCP
       name: http
   selector:
+    {{- include "otus-hw-server.selectorLabels" . | nindent 6 }}
     {{- toYaml .Values.postgresApp.labels | nindent 6 }}
 {{- end }}

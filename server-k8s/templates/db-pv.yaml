@@ -5,11 +5,11 @@ metadata:
   name: {{ .Values.postgresApp.name | quote }}
   labels:
     {{- include "otus-hw-server.labels" . | nindent 4 }}
-{{/*    {{- .Values.postgresApp.labels | nindent 4 }}*/}}
+    {{- toYaml .Values.postgresApp.labels | nindent 4 }}
 spec:
   local:
     path: /tmp/otus-hw-db
-  storageClassName: manual
+  storageClassName: {{ .Values.db_pv.storageClassName | quote }}
   persistentVolumeReclaimPolicy: Delete
   capacity:
     storage: {{ .Values.db_pv.storageSize | quote }}

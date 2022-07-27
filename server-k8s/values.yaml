@@ -2,7 +2,7 @@ replicaCount: 3
 
 image:
   repository: abashin/otus-hw-server
-  pullPolicy: Always  # TODO: IfNotPresent
+  pullPolicy: IfNotPresent
   tag: ""
 
 imagePullSecrets: []
@@ -43,7 +43,7 @@ db_deployment:
   image:
     name: postgres
     pullPolicy: IfNotPresent
-    version: 14.4.0
+    version: 14.4
   container:
     name: postgres
     port: 5432
@@ -54,6 +54,7 @@ db_pv:
   volumeMode: Filesystem
   accessMode: ReadWriteMany
   storageSize: 10Gi
+  storageClassName: manual
 
 db_pvc: ~
 

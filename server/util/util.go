@@ -1,18 +1,18 @@
-package main
+package util
 
 import (
 	"os"
 	"strings"
 )
 
-func getEnv(key, fallback string) string {
+func GetEnv(key string, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
 	return fallback
 }
 
-func dumpEnv() (envVars map[string]string) {
+func DumpEnv() (envVars map[string]string) {
 	envVars = make(map[string]string)
 	for _, e := range os.Environ() {
 		pair := strings.SplitN(e, "=", 2)

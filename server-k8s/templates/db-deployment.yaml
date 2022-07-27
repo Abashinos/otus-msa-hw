@@ -10,10 +10,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
+      {{- include "otus-hw-server.selectorLabels" . | nindent 6 }}
       {{- toYaml .Values.postgresApp.labels | nindent 6 }}
   template:
     metadata:
       labels:
+        {{- include "otus-hw-server.labels" . | nindent 8 }}
         {{- toYaml .Values.postgresApp.labels | nindent 8 }}
     spec:
       containers:

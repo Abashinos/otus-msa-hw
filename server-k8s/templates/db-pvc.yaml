@@ -5,11 +5,11 @@ metadata:
   name: {{ .Values.postgresApp.name }}
   labels:
     {{- include "otus-hw-server.labels" . | nindent 4 }}
-{{/*    {{- .Values.postgresApp.labels | nindent 4 }}*/}}
+    {{- toYaml .Values.postgresApp.labels | nindent 4 }}
 spec:
   accessModes:
     - {{ .Values.db_pv.accessMode | quote }}
-  volumeName: {{ include "otus-hw-server.fullname" . }}
+  storageClassName: {{ .Values.db_pv.storageClassName | quote }}
   volumeMode: {{ .Values.db_pv.volumeMode | quote | default "Filesystem" }}
   resources:
     requests:

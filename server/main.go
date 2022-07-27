@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Abashinos/otus_hw/server/util"
 	"log"
 	"net/http"
 	"strconv"
@@ -22,12 +23,11 @@ func health(w http.ResponseWriter, req *http.Request) {
 }
 
 func debug(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
+	// TODO: template
 	data := struct {
 		Env map[string]string `json:"env"`
 	}{
-		Env: dumpEnv(),
+		Env: util.DumpEnv(),
 	}
 	response, _ := json.Marshal(data)
 	fmt.Fprintf(w, string(response))
@@ -38,7 +38,7 @@ func main() {
 	http.HandleFunc("/health", health)
 	http.HandleFunc("/debug", debug)
 
-	portStr := getEnv("SERVER_PORT", "8000")
+	portStr := util.GetEnv("SERVER_PORT", "8000")
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
 		panic(fmt.Sprintf("Illegal port value: %s", portStr))
