@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Abashinos/otus_hw/server/util"
+	"github.com/Abashinos/otus-msa-hw/server/util"
+	"github.com/Abashinos/otus-msa-hw/server/views"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"strconv"
@@ -34,9 +36,14 @@ func debug(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/hostinfo", hostInfo)
-	http.HandleFunc("/health", health)
-	http.HandleFunc("/debug", debug)
+	r := mux.NewRouter().StrictSlash(false)
+
+	r.HandleFunc("/hostinfo", hostInfo)
+	r.HandleFunc("/health", health)
+	r.HandleFunc("/debug", debug)
+
+	usr := &views.UserSubrouter{}
+	usr.AddRoutes(r, "/users")
 
 	portStr := util.GetEnv("SERVER_PORT", "8000")
 	port, err := strconv.Atoi(portStr)
@@ -44,5 +51,5 @@ func main() {
 		panic(fmt.Sprintf("Illegal port value: %s", portStr))
 	}
 	log.Printf("Starting server on %v", port)
-	http.ListenAndServe(fmt.Sprintf(":%v", port), nil)
+	http.ListenAndServe(fmt.Sprintf(":%v", port), r)
 }

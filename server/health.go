@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Abashinos/otus_hw/server/middleware"
+	"github.com/Abashinos/otus-msa-hw/server/middleware"
 )
 
 type AppHealth struct {
@@ -19,14 +19,13 @@ type Health struct {
 }
 
 func dbHealth() *DBHealth {
-	db, err := middleware.CreateConnection()
+	_, err := middleware.CreateConnection()
 	if err != nil {
 		return &DBHealth{
 			OK:    false,
 			Error: err,
 		}
 	}
-	defer db.Close()
 	return &DBHealth{
 		OK:    true,
 		Error: nil,

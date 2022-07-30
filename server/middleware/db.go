@@ -1,42 +1,46 @@
 package middleware
 
 import (
-	"database/sql"
 	"fmt"
-	"github.com/Abashinos/otus_hw/server/util"
+	"github.com/Abashinos/otus-msa-hw/server/util"
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 )
 
-func CreateConnection() (*sql.DB, error) {
+func CreateConnection() (*gorm.DB, error) {
 	// Open the connection
-	postgresSafeUrl := fmt.Sprintf("postgresql://%s:%%s@%s:%s/%s?sslmode=%s",
-		util.GetEnv("POSTGRES_USER", "postgres"),
+	dsn := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		util.GetEnv("POSTGRES_SERVICE_HOST", "postgres"),
 		util.GetEnv("POSTGRES_SERVICE_PORT", "5423"),
+		util.GetEnv("POSTGRES_USER", "postgres"),
+		util.GetEnv("POSTGRES_PASSWORD", "test123"),
 		util.GetEnv("POSTGRES_DB", "postgresdb"),
 		util.GetEnv("POSTGRES_SSL_MODE", "disable"),
 	)
-	postgresUrl := fmt.Sprintf(
-		postgresSafeUrl,
-		util.GetEnv("POSTGRES_PASSWORD", "test123"),
-	)
-	db, err := sql.Open("postgres", postgresUrl)
+	conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		log.Printf("Failed to connect to postgres on %s. Error: %v", postgresSafeUrl, err)
+		log.Printf("Failed to connect to postgres on %s. Error: %v", dsn, err)
 		return nil, err
 	}
 
 	// check the connection
-	err = db.Ping()
-
+	db, err := conn.DB()
 	if err != nil {
-		log.Printf("Failed to ping postgres on %s. Error: %v", postgresSafeUrl, err)
+		log.Printf("Failed to get DB. Error: %v", err)
+		return nil, err
+	}
+	defer db.Close()
+
+	if db.Ping() != nil {
+		log.Printf("Failed to ping postgres. Error: %v", err)
 		return nil, err
 	}
 
-	log.Printf("Successfully connected to postgres on %s", postgresSafeUrl)
+	log.Printf("Successfully connected to postgres")
 	// return the connection
-	return db, nil
+	return conn, nil
 }
