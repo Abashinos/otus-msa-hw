@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/Abashinos/otus-msa-hw/server/util"
+	"github.com/Abashinos/otus-msa-hw/server/pkg"
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,7 +20,9 @@ func CreateConnection() (*gorm.DB, error) {
 		util.GetEnv("POSTGRES_DB", "postgresdb"),
 		util.GetEnv("POSTGRES_SSL_MODE", "disable"),
 	)
-	conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	conn, err := gorm.Open(postgres.New(postgres.Config{
+		DSN: dsn,
+	}), &gorm.Config{})
 
 	if err != nil {
 		log.Printf("Failed to connect to postgres on %s. Error: %v", dsn, err)
