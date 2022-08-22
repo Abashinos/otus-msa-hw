@@ -1,10 +1,10 @@
 package views
 
 import (
-	"github.com/Abashinos/otus-msa-hw/server/pkg/models"
+	"github.com/Abashinos/otus-msa-hw/app/pkg/models"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"log"
 	"net/http"
 )
 
@@ -16,14 +16,14 @@ func (u *UserService) create(c *gin.Context) {
 	var userPayload models.User
 	err := c.ShouldBindJSON(&userPayload)
 	if err != nil {
-		log.Printf("Unable to decode the request body into User model. %v", err)
+		log.Errorf("Unable to decode the request body into User model. %v", err)
 		JSONResponseError(c, err)
 		return
 	}
 
 	user, err := u.repository.Create(&userPayload)
 	if err != nil {
-		log.Printf("Unable to create User instance. %v", err)
+		log.Errorf("Unable to create User instance. %v", err)
 		JSONResponseError(c, err)
 		return
 	}
@@ -53,7 +53,7 @@ func (u *UserService) update(c *gin.Context) {
 	var userPayload models.User
 	err := c.ShouldBindJSON(&userPayload)
 	if err != nil {
-		log.Printf("Unable to decode the request body into User model. %v", err)
+		log.Errorf("Unable to decode the request body into User model. %v", err)
 		JSONResponseError(c, err)
 		return
 	}

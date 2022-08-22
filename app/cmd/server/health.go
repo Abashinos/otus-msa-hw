@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Abashinos/otus-msa-hw/server/pkg/middleware"
+	"github.com/Abashinos/otus-msa-hw/app/pkg/middleware"
 )
 
 type AppHealth struct {

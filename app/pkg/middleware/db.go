@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/Abashinos/otus-msa-hw/server/pkg"
+	"github.com/Abashinos/otus-msa-hw/app/pkg"
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -26,19 +26,6 @@ func CreateConnection() (*gorm.DB, error) {
 
 	if err != nil {
 		log.Printf("Failed to connect to postgres on %s. Error: %v", dsn, err)
-		return nil, err
-	}
-
-	// check the connection
-	db, err := conn.DB()
-	if err != nil {
-		log.Printf("Failed to get DB. Error: %v", err)
-		return nil, err
-	}
-	defer db.Close()
-
-	if db.Ping() != nil {
-		log.Printf("Failed to ping postgres. Error: %v", err)
 		return nil, err
 	}
 

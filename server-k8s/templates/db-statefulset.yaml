@@ -1,0 +1,38 @@
+{{- if .Values.dbApp.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.dbApp.name }}
+  labels:
+    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- toYaml .Values.dbApp.labels | nindent 4 }}
+spec:
+  replicas: {{ .Values.dbStatefulSet.replicas }}
+  serviceName: {{ .Values.dbStatefulSet.serviceName }}
+  selector:
+    matchLabels:
+      {{- include "otus-hw-server.selectorLabels" . | nindent 6 }}
+      {{- toYaml .Values.dbApp.labels | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "otus-hw-server.labels" . | nindent 8 }}
+        {{- toYaml .Values.dbApp.labels | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.dbStatefulSet.container.name | quote }}
+          image: "{{ .Values.dbStatefulSet.image.name }}:{{ .Values.dbStatefulSet.image.version }}"
+          imagePullPolicy: {{ .Values.dbStatefulSet.image.pullPolicy | quote }}
+          ports:
+            - containerPort: {{ .Values.dbStatefulSet.container.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.dbApp.name | quote }}
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: {{ .Values.dbApp.name | quote }}
+      volumes:
+        - name: {{ .Values.dbApp.name | quote }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.dbApp.name | quote }}
+{{- end }}

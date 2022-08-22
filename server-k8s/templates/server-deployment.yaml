@@ -6,7 +6,7 @@ metadata:
     {{- include "otus-hw-server.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.serverDeployment.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -31,16 +31,16 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.serverDeployment.image.repository }}:{{ .Values.serverDeployment.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.serverDeployment.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 8000
               protocol: TCP
-          {{- if .Values.postgresApp.enabled }}
+          {{- if .Values.dbApp.enabled }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.postgresApp.name | quote }}
+                name: {{ .Values.dbApp.name | quote }}
           {{- end }}
           livenessProbe:
             httpGet:
