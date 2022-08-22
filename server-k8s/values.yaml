@@ -36,7 +36,7 @@ serverService:
 migratorJob:
   image:
     repository: abashin/otus-hw-migrator
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     tag: 0.0.1
 
 dbApp:

@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrations
+  labels:
+    {{- include "otus-hw-server.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      name: db-migration
+      labels:
+        {{- include "otus-hw-server.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-migrator
+          image: {{ .Values.migratorJob.image.repository }}:{{ .Values.migratorJob.image.tag }}
+          imagePullPolicy: {{ .Values.migratorJob.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.dbApp.name | quote }}
+          command:
+            - /app
+            - up
+  backoffLimit: 0

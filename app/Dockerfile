@@ -20,7 +20,7 @@ COPY --from=builder /tmp/app ./
 
 EXPOSE 8000
 
-CMD ["/app"]
+ENTRYPOINT ["/app"]
 
 LABEL version="0.0.0"
 LABEL org.opencontainers.image.authors="abashinos@gmail.com"
