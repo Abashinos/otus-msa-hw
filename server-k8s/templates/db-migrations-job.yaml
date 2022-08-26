@@ -19,7 +19,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ .Values.dbApp.name | quote }}
+            - secretRef:
+                name: {{ .Values.dbApp.name | quote }}
           command:
             - /app
             - up
-  backoffLimit: 0
+  backoffLimit: 5

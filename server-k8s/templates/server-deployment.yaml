@@ -41,6 +41,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ .Values.dbApp.name | quote }}
+            - secretRef:
+                name: {{ .Values.dbApp.name | quote }}
           {{- end }}
           livenessProbe:
             httpGet:

@@ -25,7 +25,7 @@ serverDeployment:
   replicaCount: 3
   image:
     repository: abashin/otus-hw-server
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     tag: 0.0.3
 
 serverService:
@@ -36,7 +36,7 @@ serverService:
 migratorJob:
   image:
     repository: abashin/otus-hw-migrator
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     tag: 0.0.1
 
 dbApp:
@@ -46,7 +46,7 @@ dbApp:
     app: postgres
 
 dbStatefulSet:
-  replicas: 3
+  replicas: 1
   image:
     name: postgres
     pullPolicy: IfNotPresent
