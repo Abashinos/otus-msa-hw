@@ -31,6 +31,10 @@ func JSONResponseNoContent(c *gin.Context) {
 	JSONResponse(c, nil, http.StatusNoContent)
 }
 
+func JSONResponseBadRequest(c *gin.Context, message string) {
+	c.JSON(http.StatusBadRequest, gin.H{"error": message})
+}
+
 func JSONResponseError(c *gin.Context, err error) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{})

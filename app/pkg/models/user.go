@@ -29,7 +29,12 @@ func (u *UserRepository) Get(userID uint) (user *User, err error) {
 }
 
 func (u *UserRepository) Update(userId uint, user *User) (*User, error) {
-	if err := u.DB.Model(&user).Select("*").Updates(user).Error; err != nil {
+	if _, err := u.Get(userId); err != nil {
+		return nil, err
+	}
+
+	user.ID = userId
+	if err := u.DB.Save(user).Error; err != nil {
 		return nil, err
 	}
 	return u.Get(userId)

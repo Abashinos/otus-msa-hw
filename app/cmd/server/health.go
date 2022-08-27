@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/Abashinos/otus-msa-hw/app/pkg/middleware"
+	"gorm.io/gorm"
 )
 
 type AppHealth struct {
@@ -9,8 +10,8 @@ type AppHealth struct {
 }
 
 type DBHealth struct {
-	OK    bool  `json:"ok"`
-	Error error `json:"error"`
+	OK    bool   `json:"ok"`
+	Error string `json:"error"`
 }
 
 type Health struct {
@@ -18,29 +19,24 @@ type Health struct {
 	DB  *DBHealth  `json:"db"`
 }
 
-func dbHealth() *DBHealth {
-	_, err := middleware.CreateConnection()
-	if err != nil {
+func dbHealth(dbConn *gorm.DB) *DBHealth {
+	if err := middleware.Ping(dbConn); err != nil {
 		return &DBHealth{
 			OK:    false,
-			Error: err,
+			Error: err.Error(),
 		}
 	}
 	return &DBHealth{
 		OK:    true,
-		Error: nil,
+		Error: "",
 	}
 }
 
-func NewHealth() *Health {
+func checkHealth(dbConn *gorm.DB) *Health {
 	return &Health{
 		App: &AppHealth{
 			Status: "OK",
 		},
-		DB: dbHealth(),
+		DB: dbHealth(dbConn),
 	}
-}
-
-func checkHealth() *Health {
-	return NewHealth()
 }

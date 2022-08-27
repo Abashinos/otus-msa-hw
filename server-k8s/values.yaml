@@ -25,8 +25,8 @@ serverDeployment:
   replicaCount: 3
   image:
     repository: abashin/otus-hw-server
-    pullPolicy: IfNotPresent
-    tag: 0.0.3
+    pullPolicy: Always
+    tag: 0.0.4
 
 serverService:
   type: ClusterIP

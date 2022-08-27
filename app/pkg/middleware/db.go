@@ -33,3 +33,16 @@ func CreateConnection() (*gorm.DB, error) {
 	// return the connection
 	return conn, nil
 }
+
+func Ping(dbConn *gorm.DB) error {
+	sqlDB, err := dbConn.DB()
+	if err != nil {
+		return err
+	}
+
+	if err = sqlDB.Ping(); err != nil {
+		sqlDB.Close()
+		return err
+	}
+	return nil
+}

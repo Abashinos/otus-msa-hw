@@ -7,19 +7,23 @@ import (
 	"github.com/Abashinos/otus-msa-hw/app/pkg/middleware"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
 
+type App struct {
+	dbConn *gorm.DB
+}
+
 func hostInfo(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	fmt.Print(checkHealth())
 	c.JSON(http.StatusOK, NewHostInfo())
 }
 
-func health(c *gin.Context) {
+func (a *App) health(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, checkHealth())
+	c.JSON(http.StatusOK, checkHealth(a.dbConn))
 }
 
 func debug(c *gin.Context) {
@@ -34,7 +38,9 @@ func main() {
 		panic(fmt.Sprintf("Illegal port value: %s", portStr))
 	}
 
-	db, err := middleware.CreateConnection()
+	app := App{}
+
+	app.dbConn, err = middleware.CreateConnection()
 	if err != nil {
 		panic(err)
 	}
@@ -42,11 +48,11 @@ func main() {
 	e := gin.Default()
 
 	e.GET("/hostinfo", hostInfo)
-	e.GET("/health", health)
+	e.GET("/health", app.health)
 	e.GET("/debug", debug)
 
 	userService := &views.UserService{}
-	userService.Register(e, db)
+	userService.Register(e, app.dbConn)
 
 	log.Infof("Starting server on %v", port)
 	e.Run(fmt.Sprintf(":%v", portStr))

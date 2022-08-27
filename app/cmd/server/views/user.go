@@ -1,6 +1,7 @@
 package views
 
 import (
+	"github.com/Abashinos/otus-msa-hw/app/cmd/server/schemas"
 	"github.com/Abashinos/otus-msa-hw/app/pkg/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -13,15 +14,15 @@ type UserService struct {
 }
 
 func (u *UserService) create(c *gin.Context) {
-	var userPayload models.User
+	var userPayload schemas.UserSchemaCreate
 	err := c.ShouldBindJSON(&userPayload)
 	if err != nil {
 		log.Errorf("Unable to decode the request body into User model. %v", err)
-		JSONResponseError(c, err)
+		JSONResponseBadRequest(c, err.Error())
 		return
 	}
 
-	user, err := u.repository.Create(&userPayload)
+	user, err := u.repository.Create(userPayload.ToModel())
 	if err != nil {
 		log.Errorf("Unable to create User instance. %v", err)
 		JSONResponseError(c, err)
@@ -38,28 +39,27 @@ func (u *UserService) list(c *gin.Context) {
 func (u *UserService) get(c *gin.Context) {
 	entityData := EntityURI{}
 	c.BindUri(&entityData)
-	user, err := u.repository.Get(entityData.ID)
+	userModel, err := u.repository.Get(entityData.ID)
 	if err != nil {
 		JSONResponseError(c, err)
 		return
 	}
-	JSONResponseOK(c, gin.H{"entity": user})
+	JSONResponseOK(c, gin.H{"entity": schemas.UserSchemaGet{}.FromModel(userModel)})
 }
 
 func (u *UserService) update(c *gin.Context) {
 	entityData := EntityURI{}
 	c.BindUri(&entityData)
 
-	var userPayload models.User
+	var userPayload schemas.UserSchemaUpdate
 	err := c.ShouldBindJSON(&userPayload)
 	if err != nil {
 		log.Errorf("Unable to decode the request body into User model. %v", err)
-		JSONResponseError(c, err)
-		return
+		JSONResponseBadRequest(c, err.Error())
 	}
 
 	var user *models.User
-	if user, err = u.repository.Update(entityData.ID, &userPayload); err != nil {
+	if user, err = u.repository.Update(entityData.ID, userPayload.ToModel()); err != nil {
 		JSONResponseError(c, err)
 	}
 	JSONResponseOK(c, gin.H{"entity": user})
