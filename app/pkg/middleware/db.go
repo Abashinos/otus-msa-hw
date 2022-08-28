@@ -25,12 +25,11 @@ func CreateConnection() (*gorm.DB, error) {
 	}), &gorm.Config{})
 
 	if err != nil {
-		log.Printf("Failed to connect to postgres on %s. Error: %v", dsn, err)
+		log.Printf("Failed to connect to postgres. Error: %v", err)
 		return nil, err
 	}
 
 	log.Printf("Successfully connected to postgres")
-	// return the connection
 	return conn, nil
 }
 

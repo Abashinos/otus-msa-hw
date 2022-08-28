@@ -26,7 +26,7 @@ serverDeployment:
   image:
     repository: abashin/otus-hw-server
     pullPolicy: Always
-    tag: 0.0.4
+    tag: 0.0.5
 
 serverService:
   type: ClusterIP
