@@ -1,0 +1,26 @@
+{{- if .Values.dbApp.enabled -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.dbApp.name | quote }}
+  labels:
+    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- toYaml .Values.dbApp.labels | nindent 4 }}
+spec:
+  local:
+    path: /tmp/otus-hw-db
+  persistentVolumeReclaimPolicy: Delete
+  capacity:
+    storage: {{ .Values.dbPV.storageSize | quote }}
+  volumeMode: {{ .Values.dbPV.volumeMode | quote | default "Filesystem" }}
+  accessModes:
+    - {{ .Values.dbPV.accessMode | quote }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - minikube
+{{- end }}

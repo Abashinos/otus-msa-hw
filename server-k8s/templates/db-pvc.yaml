@@ -1,0 +1,16 @@
+{{- if .Values.dbApp.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.dbApp.name }}
+  labels:
+    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- toYaml .Values.dbApp.labels | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.dbPV.accessMode | quote }}
+  volumeMode: {{ .Values.dbPV.volumeMode | quote | default "Filesystem" }}
+  resources:
+    requests:
+      storage: {{ .Values.dbPV.storageSize | quote }}
+{{- end }}

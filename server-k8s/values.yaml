@@ -1,10 +1,3 @@
-replicaCount: 3
-
-image:
-  repository: abashin/otus-hw-server
-  pullPolicy: IfNotPresent
-  tag: ""
-
 imagePullSecrets: []
 nameOverride: "server-k8s-app"
 fullnameOverride: "server-k8s-app-chart"
@@ -13,11 +6,6 @@ serviceAccount:
   create: false
   annotations: {}
   name: ""
-
-service:
-  type: ClusterIP
-  port: 80
-  targetPort: 8000
 
 ingress:
   enabled: true
@@ -33,6 +21,58 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
+serverDeployment:
+  replicaCount: 3
+  image:
+    repository: abashin/otus-hw-server
+    pullPolicy: Always
+    tag: 0.0.5
+
+serverService:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+migratorJob:
+  image:
+    repository: abashin/otus-hw-migrator
+    pullPolicy: IfNotPresent
+    tag: 0.0.1
+
+dbApp:
+  enabled: true
+  name: postgres
+  labels:
+    app: postgres
+
+dbStatefulSet:
+  replicas: 1
+  image:
+    name: postgres
+    pullPolicy: IfNotPresent
+    version: 14.4
+  container:
+    name: postgres
+    port: 5432
+  serviceName: postgres-headless
+
+dbPV:
+  labels:
+    type: local
+  volumeMode: Filesystem
+  accessMode: ReadWriteMany
+  storageSize: 5Gi
+
+dbPVC: ~
+
+dbConfigMap: ~
+
+dbService:
+  enabled: true
+  name: postgres
+  type: ClusterIP
+  port: 5432
+  targetPort: 5432
 
 autoscaling:
   enabled: false

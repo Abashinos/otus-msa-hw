@@ -1,0 +1,19 @@
+{{- if and .Values.dbApp.enabled .Values.dbService.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.dbService.name | quote }}
+  labels:
+    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- toYaml .Values.dbApp.labels | nindent 4 }}
+spec:
+  type: {{ .Values.dbService.type | quote }}
+  ports:
+    - port: {{ .Values.dbService.port }}
+      targetPort: {{ .Values.dbService.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "otus-hw-server.selectorLabels" . | nindent 6 }}
+    {{- toYaml .Values.dbApp.labels | nindent 6 }}
+{{- end }}
