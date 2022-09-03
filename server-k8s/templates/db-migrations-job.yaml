@@ -4,6 +4,10 @@ metadata:
   name: db-migrations
   labels:
     {{- include "otus-hw-server.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   template:
     metadata:

@@ -5,16 +5,14 @@ Simple HTTP server
 ## Usage
 
 ### Install
-TODO: chart version substitution
+
 ```shell
-kubectl create namespace otus-hw
-helm package server-k8s
-helm install --namespace otus-hw otus-hw-server ./otus-hw-server-0.0.5.tgz
+make install
 ```
 
 ### Uninstall
 ```shell
-helm uninstall --namespace otus-hw otus-hw-server
+make uninstall
 ```
 
 ### API
