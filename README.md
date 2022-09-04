@@ -1,5 +1,8 @@
 # OTUS Microservice Architecture homework
 
+## Questions
+- [ ] [server-service-monitor](k8s/app/templates/server-service-monitor.yaml) - move to prometheus namespace?
+- [ ] Разделение лейблов app, db и тд - норм? 
 Simple HTTP server
 
 ## Usage

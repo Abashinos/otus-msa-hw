@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "otus-hw-server.fullname" . }}
+  name: {{ include "otus-hw-app.fullname" . }}
   labels:
-    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- include "otus-hw-app.labels.server" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.serverDeployment.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "otus-hw-server.selectorLabels" . | nindent 6 }}
+      {{- include "otus-hw-app.selectorLabels.server" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "otus-hw-server.labels" . | nindent 8 }}
+        {{- include "otus-hw-app.labels.server" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "otus-hw-server.serviceAccountName" . }}
+      serviceAccountName: {{ include "otus-hw-app.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:

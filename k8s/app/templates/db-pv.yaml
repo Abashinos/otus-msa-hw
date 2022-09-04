@@ -4,8 +4,7 @@ kind: PersistentVolume
 metadata:
   name: {{ .Values.dbApp.name | quote }}
   labels:
-    {{- include "otus-hw-server.labels" . | nindent 4 }}
-    {{- toYaml .Values.dbApp.labels | nindent 4 }}
+    {{- include "otus-hw-app.labels.db" . | nindent 4 }}
 spec:
   local:
     path: /tmp/otus-hw-db

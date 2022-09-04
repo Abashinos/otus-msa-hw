@@ -1,6 +1,6 @@
 imagePullSecrets: []
-nameOverride: "server-k8s-app"
-fullnameOverride: "server-k8s-app-chart"
+nameOverride: "otus-hw-app"
+fullnameOverride: "otus-hw-app"
 
 serviceAccount:
   create: false
@@ -21,12 +21,16 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
+serverApp:
+  additionalLabels:
+    app.domain: server
+
 serverDeployment:
   replicaCount: 3
   image:
     repository: abashin/otus-hw-server
     pullPolicy: Always
-    tag: 0.0.5
+    tag: latest
 
 serverService:
   type: ClusterIP
@@ -37,13 +41,13 @@ migratorJob:
   image:
     repository: abashin/otus-hw-migrator
     pullPolicy: IfNotPresent
-    tag: 0.0.1
+    tag: latest
 
 dbApp:
   enabled: true
   name: postgres
-  labels:
-    app: postgres
+  additionalLabels:
+    app.domain: db
 
 dbStatefulSet:
   replicas: 1

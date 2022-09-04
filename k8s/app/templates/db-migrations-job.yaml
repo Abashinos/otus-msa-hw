@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: db-migrations
   labels:
-    {{- include "otus-hw-server.labels" . | nindent 4 }}
+    {{- include "otus-hw-app.labels.db" . | nindent 4 }}
   annotations:
     "helm.sh/hook": post-install
     "helm.sh/hook-weight": "0"
@@ -13,7 +13,7 @@ spec:
     metadata:
       name: db-migration
       labels:
-        {{- include "otus-hw-server.labels" . | nindent 8 }}
+        {{- include "otus-hw-app.labels.db" . | nindent 8 }}
     spec:
       restartPolicy: Never
       containers:

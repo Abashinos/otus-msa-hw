@@ -4,8 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.dbApp.name }}
   labels:
-    {{- include "otus-hw-server.labels" . | nindent 4 }}
-    {{- toYaml .Values.dbApp.labels | nindent 4 }}
+    {{- include "otus-hw-app.labels.db" . | nindent 4 }}
 spec:
   accessModes:
     - {{ .Values.dbPV.accessMode | quote }}
