@@ -1,0 +1,21 @@
+# Supposed to be installed in main app namespace in order to access db password secret
+
+config:
+  datasource:
+    host: postgres
+    user: admin
+    passwordSecret:
+      name: postgres
+      key: POSTGRES_PASSWORD
+    port: "5432"
+    database: "postgresdb"
+    sslmode: disable
+
+serviceMonitor:
+  enabled: true
+  namespace: otus-hw
+  interval: 10s
+  telemetryPath: /metrics
+  labels:
+    name: otus-hw
+    kind: postgres

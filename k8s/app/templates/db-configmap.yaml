@@ -6,5 +6,5 @@ metadata:
   labels:
     {{- include "otus-hw-app.labels.db" . | nindent 4 }}
 data:
-  POSTGRES_DB: postgresdb
+  POSTGRES_DB: otus-hw
 {{- end }}

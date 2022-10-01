@@ -3,7 +3,7 @@ grafana:
     GF_SERVER_ROOT_URL: https://arch.homework/grafana
     GF_SERVER_SERVE_FROM_SUB_PATH: 'true'
   # username is 'admin'
-  adminPassword: prom-operator
+  adminPassword: otus-hw
 
   ingress:
     enabled: true
