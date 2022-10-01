@@ -4,20 +4,17 @@ kind: StatefulSet
 metadata:
   name: {{ .Values.dbApp.name }}
   labels:
-    {{- include "otus-hw-server.labels" . | nindent 4 }}
-    {{- toYaml .Values.dbApp.labels | nindent 4 }}
+    {{- include "otus-hw-app.labels.db" . | nindent 4 }}
 spec:
   replicas: {{ .Values.dbStatefulSet.replicas }}
   serviceName: {{ .Values.dbStatefulSet.serviceName }}
   selector:
     matchLabels:
-      {{- include "otus-hw-server.selectorLabels" . | nindent 6 }}
-      {{- toYaml .Values.dbApp.labels | nindent 6 }}
+      {{- include "otus-hw-app.selectorLabels.db" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "otus-hw-server.labels" . | nindent 8 }}
-        {{- toYaml .Values.dbApp.labels | nindent 8 }}
+        {{- include "otus-hw-app.labels.db" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Values.dbStatefulSet.container.name | quote }}

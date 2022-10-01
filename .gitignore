@@ -1,4 +1,7 @@
 .idea
 *.tgz
 
+cache/*
+!cache/.gitkeep
 debug/
+sources/

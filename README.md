@@ -1,20 +1,21 @@
 # OTUS Microservice Architecture homework
 
+## Questions
+- [ ] [server-service-monitor](k8s/app/templates/server-service-monitor.yaml) - move to prometheus namespace?
+- [ ] Разделение лейблов app, db и тд - норм? 
 Simple HTTP server
 
 ## Usage
 
 ### Install
-TODO: chart version substitution
+
 ```shell
-kubectl create namespace otus-hw
-helm package server-k8s
-helm install --namespace otus-hw otus-hw-server ./otus-hw-server-0.0.5.tgz
+make install
 ```
 
 ### Uninstall
 ```shell
-helm uninstall --namespace otus-hw otus-hw-server
+make uninstall
 ```
 
 ### API

@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "otus-hw-server.name" -}}
+{{- define "otus-hw-app.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "otus-hw-server.fullname" -}}
+{{- define "otus-hw-app.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "otus-hw-server.chart" -}}
+{{- define "otus-hw-app.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "otus-hw-server.labels" -}}
-helm.sh/chart: {{ include "otus-hw-server.chart" . }}
-{{ include "otus-hw-server.selectorLabels" . }}
+{{- define "otus-hw-app.labels" -}}
+helm.sh/chart: {{ include "otus-hw-app.chart" . }}
+{{ include "otus-hw-app.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -43,19 +43,51 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Server labels
+*/}}
+{{- define "otus-hw-app.labels.server"}}
+{{ include "otus-hw-app.labels" . }}
+{{ toYaml .Values.serverApp.additionalLabels }}
+{{- end }}
+
+{{/*
+DB labels
+*/}}
+{{- define "otus-hw-app.labels.db"}}
+{{ include "otus-hw-app.labels" . }}
+{{ toYaml .Values.dbApp.additionalLabels }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
-{{- define "otus-hw-server.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "otus-hw-server.name" . }}
+{{- define "otus-hw-app.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "otus-hw-app.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Server selector labels
+*/}}
+{{- define "otus-hw-app.selectorLabels.server" -}}
+{{ include "otus-hw-app.selectorLabels" . }}
+{{ toYaml .Values.serverApp.additionalLabels }}
+{{- end }}
+
+{{/*
+DB selector labels
+*/}}
+{{- define "otus-hw-app.selectorLabels.db" -}}
+{{ include "otus-hw-app.selectorLabels" . }}
+{{ toYaml .Values.dbApp.additionalLabels }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "otus-hw-server.serviceAccountName" -}}
+{{- define "otus-hw-app.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "otus-hw-server.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "otus-hw-app.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

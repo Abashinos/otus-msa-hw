@@ -1,0 +1,27 @@
+grafana:
+  env:
+    GF_SERVER_ROOT_URL: https://arch.homework/grafana
+    GF_SERVER_SERVE_FROM_SUB_PATH: 'true'
+  # username is 'admin'
+  adminPassword: otus-hw
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+    hosts: ['arch.homework']
+    path: "/grafana(/|$)(.*)"
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    externalUrl: "https://arch.homework/prometheus"
+    routePrefix: /prometheus
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    hosts: [ 'arch.homework' ]
+    paths: [ '/prometheus' ] # does not need regex capture like others
