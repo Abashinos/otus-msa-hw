@@ -6,7 +6,6 @@ import (
 	"github.com/Abashinos/otus-msa-hw/app/pkg"
 	"github.com/Abashinos/otus-msa-hw/app/pkg/middleware"
 	"github.com/gin-gonic/gin"
-	ginprometheus "github.com/mcuadros/go-gin-prometheus"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"net/http"
@@ -55,9 +54,7 @@ func main() {
 	userService := &views.UserService{}
 	userService.Register(engine, app.dbConn)
 
-	prom := ginprometheus.NewPrometheus("gin", []*ginprometheus.Metric{
-		{Name: "testik", Description: "testik", Type: "gauge", MetricCollector: nil},
-	})
+	prom := middleware.NewPrometheusMiddleware("gin")
 	prom.Use(engine)
 
 	log.Infof("Starting server on %v", port)
