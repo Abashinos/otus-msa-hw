@@ -2,123 +2,211 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	ginprometheus "github.com/mcuadros/go-gin-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
+	"strconv"
+	"time"
 )
 
+type Metric struct {
+	Namespace   string
+	Name        string
+	Help        string
+	ConstLabels prometheus.Labels
+	LabelNames  []string
+	Buckets     []float64
+
+	MetricCollector prometheus.Collector
+
+	ID   string
+	Type string
+}
+
 // NewMetric associates prometheus.Collector based on Metric.Type
-func NewMetric(m *ginprometheus.Metric, subsystem string) prometheus.Collector {
-	var metric prometheus.Collector
+func NewMetric(m *Metric, subsystem string, labels map[string]string) prometheus.Collector {
+	var collector prometheus.Collector
+	m.ConstLabels = labels
 	switch m.Type {
 	case "counter_vec":
-		metric = prometheus.NewCounterVec(
+		collector = prometheus.NewCounterVec(
 			prometheus.CounterOpts{
-				Subsystem: subsystem,
-				Name:      m.Name,
-				Help:      m.Description,
+				Subsystem:   subsystem,
+				Namespace:   m.Namespace,
+				Name:        m.Name,
+				Help:        m.Help,
+				ConstLabels: m.ConstLabels,
 			},
-			m.Args,
+			m.LabelNames,
 		)
 	case "counter":
-		metric = prometheus.NewCounter(
+		collector = prometheus.NewCounter(
 			prometheus.CounterOpts{
-				Subsystem: subsystem,
-				Name:      m.Name,
-				Help:      m.Description,
+				Subsystem:   subsystem,
+				Namespace:   m.Namespace,
+				Name:        m.Name,
+				Help:        m.Help,
+				ConstLabels: m.ConstLabels,
 			},
 		)
 	case "gauge_vec":
-		metric = prometheus.NewGaugeVec(
+		collector = prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
-				Subsystem: subsystem,
-				Name:      m.Name,
-				Help:      m.Description,
+				Subsystem:   subsystem,
+				Namespace:   m.Namespace,
+				Name:        m.Name,
+				Help:        m.Help,
+				ConstLabels: m.ConstLabels,
 			},
-			m.Args,
+			m.LabelNames,
 		)
 	case "gauge":
-		metric = prometheus.NewGauge(
+		collector = prometheus.NewGauge(
 			prometheus.GaugeOpts{
-				Subsystem: subsystem,
-				Name:      m.Name,
-				Help:      m.Description,
+				Subsystem:   subsystem,
+				Namespace:   m.Namespace,
+				Name:        m.Name,
+				Help:        m.Help,
+				ConstLabels: m.ConstLabels,
 			},
 		)
 	case "histogram_vec":
-		metric = prometheus.NewHistogramVec(
+		collector = prometheus.NewHistogramVec(
 			prometheus.HistogramOpts{
-				Subsystem: subsystem,
-				Name:      m.Name,
-				Help:      m.Description,
+				Subsystem:   subsystem,
+				Namespace:   m.Namespace,
+				Name:        m.Name,
+				Help:        m.Help,
+				ConstLabels: m.ConstLabels,
+				Buckets:     m.Buckets,
 			},
-			m.Args,
+			m.LabelNames,
 		)
 	case "histogram":
-		metric = prometheus.NewHistogram(
+		collector = prometheus.NewHistogram(
 			prometheus.HistogramOpts{
-				Subsystem: subsystem,
-				Name:      m.Name,
-				Help:      m.Description,
+				Subsystem:   subsystem,
+				Namespace:   m.Namespace,
+				Name:        m.Name,
+				Help:        m.Help,
+				ConstLabels: m.ConstLabels,
+				Buckets:     m.Buckets,
 			},
 		)
 	case "summary_vec":
-		metric = prometheus.NewSummaryVec(
+		collector = prometheus.NewSummaryVec(
 			prometheus.SummaryOpts{
-				Subsystem: subsystem,
-				Name:      m.Name,
-				Help:      m.Description,
+				Subsystem:   subsystem,
+				Namespace:   m.Namespace,
+				Name:        m.Name,
+				Help:        m.Help,
+				ConstLabels: m.ConstLabels,
 			},
-			m.Args,
+			m.LabelNames,
 		)
 	case "summary":
-		metric = prometheus.NewSummary(
+		collector = prometheus.NewSummary(
 			prometheus.SummaryOpts{
-				Subsystem: subsystem,
-				Name:      m.Name,
-				Help:      m.Description,
+				Subsystem:   subsystem,
+				Namespace:   m.Namespace,
+				Name:        m.Name,
+				Help:        m.Help,
+				ConstLabels: m.ConstLabels,
 			},
 		)
 	}
-	return metric
+	return collector
 }
 
 var defaultMetricsPath = "/metrics"
 
-var defaultMetrics = []*ginprometheus.Metric{
-	&ginprometheus.Metric{}, // TODO
+var reqTotal = &Metric{
+	ID:         "reqTotal",
+	Name:       "requests_total",
+	Help:       "Total requests",
+	Type:       "counter_vec",
+	LabelNames: []string{"method", "path", "status_code"},
+}
+var reqDuration = &Metric{
+	ID:   "reqDuration",
+	Name: "request_duration_seconds",
+	Help: "Duration of HTTP requests",
+	Type: "histogram_vec",
+	Buckets: []float64{
+		0.000000001, // 1ns
+		0.000000002,
+		0.000000005,
+		0.00000001, // 10ns
+		0.00000002,
+		0.00000005,
+		0.0000001, // 100ns
+		0.0000002,
+		0.0000005,
+		0.000001, // 1µs
+		0.000002,
+		0.000005,
+		0.00001, // 10µs
+		0.00002,
+		0.00005,
+		0.0001, // 100µs
+		0.0002,
+		0.0005,
+		0.001, // 1ms
+		0.002,
+		0.005,
+		0.01, // 10ms
+		0.02,
+		0.05,
+		0.1, // 100 ms
+		0.2,
+		0.5,
+		1.0, // 1s
+		2.0,
+		5.0,
+		10.0, // 10s
+		15.0,
+		20.0,
+		30.0,
+	},
+	LabelNames: []string{"method", "path", "status_code"},
+}
+
+var defaultMetrics = []*Metric{
+	reqTotal,
+	reqDuration,
+	// TODO
 }
 
 type PrometheusMiddleware struct {
 	MetricsPath string
-	metricsList []*ginprometheus.Metric
+	metricsList []*Metric
 
 	requests *prometheus.CounterVec
 }
 
-func newPrometheusMiddleware(subsystem string, metricsList []*ginprometheus.Metric) *PrometheusMiddleware {
+func newPrometheusMiddleware(subsystem string, metricsList []*Metric, labels map[string]string) *PrometheusMiddleware {
 	p := &PrometheusMiddleware{
 		metricsList: metricsList,
 		MetricsPath: defaultMetricsPath,
 	}
-	p.registerMetrics(subsystem)
+	p.registerMetrics(subsystem, labels)
 	return p
 }
 
-func NewPrometheusMiddleware(subsystem string, metricsList ...[]*ginprometheus.Metric) *PrometheusMiddleware {
-	metrics := metricsList[0]
-	for _, metric := range defaultMetrics {
-		metrics = append(metrics, metric)
-	}
-	return newPrometheusMiddleware(subsystem, metrics)
+func NewPrometheusMiddleware(subsystem string, labels map[string]string) *PrometheusMiddleware {
+	return newPrometheusMiddleware(subsystem, defaultMetrics, labels)
 }
 
-func (p *PrometheusMiddleware) registerMetrics(subsystem string) {
+func (p *PrometheusMiddleware) registerMetrics(subsystem string, labels map[string]string) {
+	if labels == nil {
+		labels = make(map[string]string)
+	}
 	for _, metricDef := range p.metricsList {
-		metric := NewMetric(metricDef, subsystem)
+		metric := NewMetric(metricDef, subsystem, labels)
 		if err := prometheus.Register(metric); err != nil {
 			log.WithError(err).Errorf("%s could not be registered in Prometheus", metricDef.Name)
+		} else {
+			log.Printf("Successfully registered metric '%s' in Prometheus", metricDef.Name)
 		}
 		metricDef.MetricCollector = metric
 	}
@@ -130,8 +218,16 @@ func (p *PrometheusMiddleware) HandlerFunc() gin.HandlerFunc {
 			c.Next()
 			return
 		}
+		method := c.Request.Method
+		path := c.Request.URL.Path
 
+		start := time.Now()
 		c.Next()
+		elapsed := float64(time.Since(start).Nanoseconds()) / 1e9
+
+		status := strconv.Itoa(c.Writer.Status())
+		reqTotal.MetricCollector.(*prometheus.CounterVec).WithLabelValues(method, path, status).Inc()
+		reqDuration.MetricCollector.(*prometheus.HistogramVec).WithLabelValues(method, path, status).Observe(elapsed)
 	}
 }
 

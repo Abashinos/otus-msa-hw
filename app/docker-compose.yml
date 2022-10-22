@@ -1,0 +1,55 @@
+version: '3.4'
+
+x-pg-config: &pg-config
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_USER: otus-hw
+  POSTGRES_PASSWORD: otus-hw
+  POSTGRES_DB: otus-hw
+
+services:
+  db:
+    image: postgres
+    hostname: 'postgres'
+    restart: always
+    environment:
+      <<: *pg-config
+    ports:
+      - '5432:5432'
+    networks:
+      - db
+    volumes:
+      - "db:/var/lib/postgresql/data"
+
+  migrator:
+    build:
+      args:
+        BUILD_PACKAGE: migrator
+    command:
+      - up
+    environment:
+      <<: *pg-config
+    networks:
+      - db
+    depends_on:
+      - db
+
+  server:
+    build:
+      args:
+        BUILD_PACKAGE: server
+    ports:
+      - '8800:8000'
+    environment:
+      <<: *pg-config
+    networks:
+      - db
+      - app
+    depends_on:
+      - db
+
+networks:
+  db:
+  app:
+volumes:
+  db:

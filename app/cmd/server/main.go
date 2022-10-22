@@ -47,15 +47,15 @@ func main() {
 
 	engine := gin.Default()
 
+	prom := middleware.NewPrometheusMiddleware("gin", nil)
+	prom.Use(engine)
+
 	engine.GET("/hostinfo", hostInfo)
 	engine.GET("/health", app.health)
 	engine.GET("/debug", debug)
 
 	userService := &views.UserService{}
 	userService.Register(engine, app.dbConn)
-
-	prom := middleware.NewPrometheusMiddleware("gin")
-	prom.Use(engine)
 
 	log.Infof("Starting server on %v", port)
 	engine.Run(fmt.Sprintf(":%v", portStr))

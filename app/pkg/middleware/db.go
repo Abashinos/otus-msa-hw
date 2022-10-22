@@ -14,7 +14,7 @@ func CreateConnection() (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		util.GetEnv("POSTGRES_SERVICE_HOST", "postgres"),
-		util.GetEnv("POSTGRES_SERVICE_PORT", "5423"),
+		util.GetEnv("POSTGRES_SERVICE_PORT", "5432"),
 		util.GetEnv("POSTGRES_USER", "postgres"),
 		util.GetEnv("POSTGRES_PASSWORD", "test123"),
 		util.GetEnv("POSTGRES_DB", "postgresdb"),
@@ -33,7 +33,7 @@ func CreateConnection() (*gorm.DB, error) {
 	return conn, nil
 }
 
-func Ping(dbConn *gorm.DB) error {
+func PingDB(dbConn *gorm.DB) error {
 	sqlDB, err := dbConn.DB()
 	if err != nil {
 		return err

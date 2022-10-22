@@ -7,6 +7,7 @@ import (
 	"github.com/Abashinos/otus-msa-hw/app/pkg/middleware"
 	"github.com/Abashinos/otus-msa-hw/app/pkg/models"
 	"github.com/akamensky/argparse"
+	"golang.org/x/exp/maps"
 	"gorm.io/gorm"
 	"os"
 )
@@ -32,7 +33,7 @@ var commands = map[string]func() error{
 
 func main() {
 	parser := argparse.NewParser("Migrator", "It migrates")
-	command := parser.StringPositional(&argparse.Options{Required: true, Validate: func(args []string) error {
+	commandName := parser.StringPositional(&argparse.Options{Required: true, Validate: func(args []string) error {
 		if _, ok := commands[args[0]]; !ok {
 			return errors.New(fmt.Sprintf("Unsupported command '%s'", args[0]))
 		}
@@ -49,7 +50,12 @@ func main() {
 		panic(err)
 	}
 
-	if err = commands[*command](); err != nil {
+	command, ok := commands[*commandName]
+	if !ok {
+		panic(fmt.Sprintf("Specify command to run. Available commands: %v", maps.Keys(commands)))
+	}
+
+	if err = command(); err != nil {
 		panic(err)
 	}
 }

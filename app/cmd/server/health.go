@@ -20,7 +20,7 @@ type Health struct {
 }
 
 func dbHealth(dbConn *gorm.DB) *DBHealth {
-	if err := middleware.Ping(dbConn); err != nil {
+	if err := middleware.PingDB(dbConn); err != nil {
 		return &DBHealth{
 			OK:    false,
 			Error: err.Error(),
