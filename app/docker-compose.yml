@@ -42,6 +42,7 @@ services:
       - '8800:8000'
     environment:
       <<: *pg-config
+      SIMULATE_ERRORS: "true"
     networks:
       - db
       - app

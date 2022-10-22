@@ -168,7 +168,7 @@ var reqDuration = &Metric{
 		20.0,
 		30.0,
 	},
-	LabelNames: []string{"method", "path", "status_code"},
+	LabelNames: []string{"method", "path"},
 }
 
 var defaultMetrics = []*Metric{
@@ -227,7 +227,9 @@ func (p *PrometheusMiddleware) HandlerFunc() gin.HandlerFunc {
 
 		status := strconv.Itoa(c.Writer.Status())
 		reqTotal.MetricCollector.(*prometheus.CounterVec).WithLabelValues(method, path, status).Inc()
-		reqDuration.MetricCollector.(*prometheus.HistogramVec).WithLabelValues(method, path, status).Observe(elapsed)
+		if c.Writer.Status() < 400 {
+			reqDuration.MetricCollector.(*prometheus.HistogramVec).WithLabelValues(method, path).Observe(elapsed)
+		}
 	}
 }
 

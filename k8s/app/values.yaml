@@ -29,8 +29,8 @@ serverDeployment:
   replicaCount: 3
   image:
     repository: abashin/otus-hw-server
-    pullPolicy: Always
-    tag: latest
+    pullPolicy: IfNotPresent
+    tag: 0.3.0
 
 serverService:
   type: ClusterIP
@@ -39,9 +39,9 @@ serverService:
 
 migratorJob:
   image:
-    repository: abashin/otus-hw-migrator
+    repository: abashin/otus-hw-migrator:0.3.0
     pullPolicy: IfNotPresent
-    tag: latest
+    tag: 0.3.0
 
 dbApp:
   enabled: true

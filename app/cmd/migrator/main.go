@@ -46,7 +46,7 @@ func main() {
 		return
 	}
 
-	if db, err = middleware.CreateConnection(); err != nil {
+	if db, err = middleware.CreateDBConnection(); err != nil {
 		panic(err)
 	}
 

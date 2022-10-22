@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-func CreateConnection() (*gorm.DB, error) {
+func CreateDBConnection() (*gorm.DB, error) {
 	// Open the connection
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",

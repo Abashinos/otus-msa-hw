@@ -2,14 +2,17 @@ package main
 
 import (
 	"fmt"
+	serverMiddleware "github.com/Abashinos/otus-msa-hw/app/cmd/server/middleware"
 	"github.com/Abashinos/otus-msa-hw/app/cmd/server/views"
 	"github.com/Abashinos/otus-msa-hw/app/pkg"
-	"github.com/Abashinos/otus-msa-hw/app/pkg/middleware"
+	commonMiddleware "github.com/Abashinos/otus-msa-hw/app/pkg/middleware"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"math/rand"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type App struct {
@@ -40,15 +43,29 @@ func main() {
 
 	app := App{}
 
-	app.dbConn, err = middleware.CreateConnection()
+	app.dbConn, err = commonMiddleware.CreateDBConnection()
 	if err != nil {
 		panic(err)
 	}
 
 	engine := gin.Default()
 
-	prom := middleware.NewPrometheusMiddleware("gin", nil)
+	prom := serverMiddleware.NewPrometheusMiddleware("gin", nil)
 	prom.Use(engine)
+
+	// This should go after Prometheus middleware, otherwise metric measurements won't work
+	simulateErrorsStr := util.GetEnv("SIMULATE_ERRORS", "false")
+	simulateErrors, err := strconv.ParseBool(simulateErrorsStr)
+	if err != nil {
+		log.Errorf("Illegal boolean value for SIMULATE_ERRORS flag: %s", simulateErrorsStr)
+		simulateErrors = false
+	}
+	if simulateErrors {
+		log.Info("Simulating errors")
+		rand.Seed(time.Now().UnixNano())
+		engine.Use(serverMiddleware.NewFlakyMiddleware())
+		engine.Use(serverMiddleware.NewDelayerMiddleware())
+	}
 
 	engine.GET("/hostinfo", hostInfo)
 	engine.GET("/health", app.health)
