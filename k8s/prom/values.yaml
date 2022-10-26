@@ -13,6 +13,8 @@ grafana:
     hosts: ['arch.homework']
     path: "/grafana(/|$)(.*)"
 
+  # TODO: import dashboards somehow
+
 prometheus:
   prometheusSpec:
     serviceMonitorSelectorNilUsesHelmValues: false

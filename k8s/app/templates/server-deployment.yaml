@@ -40,6 +40,8 @@ spec:
           {{- if .Values.dbApp.enabled }}
           envFrom:
             - configMapRef:
+                name: {{ .Values.serverApp.name | quote }}
+            - configMapRef:
                 name: {{ .Values.dbApp.name | quote }}
             - secretRef:
                 name: {{ .Values.dbApp.name | quote }}

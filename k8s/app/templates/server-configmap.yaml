@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.serverApp.name | quote }}
+  labels:
+    {{- include "otus-hw-app.labels.db" . | nindent 4 }}
+data:
+  {{- toYaml .Values.serverApp.environment | nindent 4 }}

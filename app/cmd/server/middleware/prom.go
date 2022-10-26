@@ -184,7 +184,8 @@ type PrometheusMiddleware struct {
 	requests *prometheus.CounterVec
 }
 
-func newPrometheusMiddleware(subsystem string, metricsList []*Metric, labels map[string]string) *PrometheusMiddleware {
+func newPrometheusMiddleware(subsystem string,
+	metricsList []*Metric, labels map[string]string) *PrometheusMiddleware {
 	p := &PrometheusMiddleware{
 		metricsList: metricsList,
 		MetricsPath: defaultMetricsPath,
@@ -195,6 +196,10 @@ func newPrometheusMiddleware(subsystem string, metricsList []*Metric, labels map
 
 func NewPrometheusMiddleware(subsystem string, labels map[string]string) *PrometheusMiddleware {
 	return newPrometheusMiddleware(subsystem, defaultMetrics, labels)
+}
+
+func (p *PrometheusMiddleware) SetMetricsPath(path string) {
+	p.MetricsPath = path
 }
 
 func (p *PrometheusMiddleware) registerMetrics(subsystem string, labels map[string]string) {
@@ -240,11 +245,11 @@ func prometheusHandler() gin.HandlerFunc {
 	}
 }
 
-func (p *PrometheusMiddleware) SetMetricsPath(e *gin.Engine) {
+func (p *PrometheusMiddleware) RegisterMetricsRoute(e *gin.Engine) {
 	e.GET(p.MetricsPath, prometheusHandler())
 }
 
 func (p *PrometheusMiddleware) Use(e *gin.Engine) {
 	e.Use(p.HandlerFunc())
-	p.SetMetricsPath(e)
+	p.RegisterMetricsRoute(e)
 }

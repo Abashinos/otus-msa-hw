@@ -51,6 +51,7 @@ func main() {
 	engine := gin.Default()
 
 	prom := serverMiddleware.NewPrometheusMiddleware("gin", nil)
+	prom.SetMetricsPath(views.RouteMetrics)
 	prom.Use(engine)
 
 	// This should go after Prometheus middleware, otherwise metric measurements won't work
@@ -68,7 +69,7 @@ func main() {
 	}
 
 	engine.GET("/hostinfo", hostInfo)
-	engine.GET("/health", app.health)
+	engine.GET(views.RouteHealth, app.health)
 	engine.GET("/debug", debug)
 
 	userService := &views.UserService{}

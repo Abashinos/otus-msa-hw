@@ -22,15 +22,18 @@ ingress:
   tls: []
 
 serverApp:
+  name: server
   additionalLabels:
     app.domain: server
+  environment:
+    SIMULATE_ERRORS: "true"
 
 serverDeployment:
   replicaCount: 3
   image:
     repository: abashin/otus-hw-server
     pullPolicy: IfNotPresent
-    tag: 0.3.0
+    tag: 0.3.2
 
 serverService:
   type: ClusterIP
@@ -39,7 +42,7 @@ serverService:
 
 migratorJob:
   image:
-    repository: abashin/otus-hw-migrator:0.3.0
+    repository: abashin/otus-hw-migrator
     pullPolicy: IfNotPresent
     tag: 0.3.0
 
